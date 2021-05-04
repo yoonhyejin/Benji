@@ -46,9 +46,10 @@ Grafana를 이용한 통계 대시보드
 - Python
 - PostgreSQL
 - Grafana
-- psycopg2
 - AWS EC2
 - SMTP
+- psycopg2
+- pgadmin4
 - Crontab
 - PyQt
 
@@ -63,7 +64,8 @@ Grafana를 이용한 통계 대시보드
 - benji.py : GUI (PyQt) 소스코드
 - send_reports.py : 월간 보고서 전송하는 smtp 소스코드
 - weekly_data_backup.py : 주간 데이터를 DB에 백업하는 소스코드
-- grafana_queries.md : Grafana 및 패널 설명
+- db_schema.md : PostgreSQL DB table schema 설명
+- grafana_queries.md : Grafana 패널 및 쿼리 설명
 
 send_reports.py도 AWS 위에 올라가 있다. 해당 파일을 주기적으로 실행하는 CRON은 다음과 같다.
 
