@@ -114,5 +114,5 @@ send_reports.py도 AWS 위에 올라가 있다. 해당 파일을 주기적으로
 
 ### External Link
 
-- Github
-- Blog
+- [Github](https://github.com/yoonhyejin/Benji)
+- [Blog](https://diana-lab.tistory.com/82)
