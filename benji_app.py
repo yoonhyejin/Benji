@@ -15,7 +15,6 @@ def clickable(widget):
         clicked = pyqtSignal()
 
         def eventFilter(self, obj, event):
-
             if obj == widget:
                 if event.type() == QEvent.MouseButtonRelease:
                     if obj.rect().contains(event.pos()):
@@ -34,11 +33,11 @@ class MyApp(QWidget):
         self.datetime = QDateTime.currentDateTime()
         self.stats_url = "" #grafana web url
 
-        #connect to sql
+        # connect to sql
         self.conn = psycopg2.connect("host= dbname= user= password=") #postgresql connection information
         self.cur = self.conn.cursor()
 
-        #get lateset status
+        # get lateset status
         sql = "SELECT * from benji ORDER BY in_ts DESC LIMIT 1"
         self.cur.execute(sql)
         latest_row = self.cur.fetchone()
@@ -49,7 +48,7 @@ class MyApp(QWidget):
             self.status = 'OUT'
             self.confirm_msg = "Latest Status: {}, {}".format(self.status, datetime.strftime(latest_row[3], "%Y-%m-%d-%H:%M"))
 
-        #get images
+        # get images
         self.img_path = '/img/'
         self.sleep_img = QPixmap(self.img_path+'sleep.png')
         self.sleepy_img = QPixmap(self.img_path+'sleepy.png')
@@ -65,11 +64,10 @@ class MyApp(QWidget):
         self.initUI()
 
     def initUI(self):
-
         grid = QGridLayout()
         self.setLayout(grid)
 
-        #title_img QLabel
+        # title_img QLabel
         self.title_img = QLabel()
         self.title_img.setStyleSheet(self.hover_css())
         self.title_img.setAlignment(Qt.AlignCenter)
@@ -80,18 +78,18 @@ class MyApp(QWidget):
         time_label.setPixmap(self.time_img)
         grid.addWidget(time_label, 1,0)
 
-        #now_btn QRadioButton
+        # now_btn QRadioButton
         self.now_btn = QRadioButton('Now')
         self.now_btn.setChecked(True)
         self.now_btn.setCursor(QCursor(Qt.PointingHandCursor))
         grid.addWidget(self.now_btn, 1,1,1,1)
 
-        #manual_btn QRadioButton
+        # manual_btn QRadioButton
         self.manual_btn = QRadioButton('Manually')
         self.manual_btn.setCursor(QCursor(Qt.PointingHandCursor))
         grid.addWidget(self.manual_btn, 1,2,1,1)
 
-        #ts QDateTimeEdit
+        # ts QDateTimeEdit
         self.ts = QDateTimeEdit(self)
         self.ts.setDateTime(self.datetime)
         self.ts.setDateTimeRange(QDateTime(1900, 1, 1, 00, 00, 00), QDateTime(2100, 1, 1, 00, 00, 00))
@@ -103,13 +101,13 @@ class MyApp(QWidget):
         msg_label.setPixmap(self.msg_img)
         grid.addWidget(msg_label, 3,0)
 
-        #msg QTextEdit
+        # msg QTextEdit
         self.msg = QTextEdit()
         self.msg.setStyleSheet("background-color: white; border-radius: 10px; border: 3px solid white;")
         self.msg.installEventFilter(self)
         grid.addWidget(self.msg, 4,0,1,3)
 
-        #in_btn, out_btn Qlabel
+        # in_btn, out_btn Qlabel
         self.in_btn = QLabel()
         self.in_btn.setAlignment(Qt.AlignCenter)
         self.in_btn.setCursor(QCursor(Qt.PointingHandCursor))
@@ -118,11 +116,10 @@ class MyApp(QWidget):
         self.out_btn.setAlignment(Qt.AlignCenter)
         self.out_btn.setCursor(QCursor(Qt.PointingHandCursor))
 
-
         grid.addWidget(self.in_btn, 5, 1)
         grid.addWidget(self.out_btn, 5, 2)
 
-        #stats_btn QLabel
+        # stats_btn QLabel
         stats_btn = QLabel()
         stats_btn.setPixmap(self.stats_img)
         stats_btn.setAlignment(Qt.AlignLeft)
@@ -133,8 +130,7 @@ class MyApp(QWidget):
         self.confirmlabel = QLabel(self.confirm_msg, self)
         grid.addWidget(self.confirmlabel, 6,0,1,3)
 
-
-        #conditional images
+        # conditional images
         if self.status == 'IN':
             self.in_btn.setPixmap(self.in_grey_img)
             self.out_btn.setPixmap(self.out_img)
@@ -153,7 +149,6 @@ class MyApp(QWidget):
         self.setStyleSheet("background-color: rgb(220,208,255);")
         self.setGeometry(300, 300, 300, 200)
         self.show()
-
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Return:
@@ -186,12 +181,10 @@ class MyApp(QWidget):
         self.out_btn.setPixmap(self.out_grey_img)
         self.in_btn.setPixmap(self.in_img)
 
-
     def openWeb(self):
         webbrowser.open(self.stats_url)
 
 def save(self):
-
         if self.now_btn.isChecked():
             ts = datetime.now()
         else:
@@ -204,16 +197,15 @@ def save(self):
         self.cur.execute(sql, [ts])
         row = self.cur.fetchone()
 
-
         if self.status == 'IN' and (row == None or row[3] != None):
-            #create new row
+            # create new row
             sql = "INSERT INTO benji (dte, in_ts, out_ts, net_time, in_m, out_m) VALUES (%s,%s,%s,%s,%s,%s)"
             self.cur.execute(sql, [today, ts, None, 0, msg, ''])
             self.conn.commit()
             self.confirm_msg = "Status updated : {}, {}".format(datetime.strftime(ts, "%Y-%m-%d-%H:%M"), self.status)
 
         elif self.status == 'OUT' and row[3] == None:
-            #update last row
+            # update last row
             net_time = np.round(((ts - row[2]).seconds)/60,2)
             sql = "UPDATE benji SET out_ts = %s, net_time = %s, out_m = %s WHERE in_ts = %s"
             self.cur.execute(sql,[ts, net_time, msg ,row[2]])
